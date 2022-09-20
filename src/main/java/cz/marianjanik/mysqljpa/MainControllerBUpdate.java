@@ -1,7 +1,9 @@
-package cz.marianjanik.mysql_jpa;
+package cz.marianjanik.mysqljpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class MainControllerBUpdate {
@@ -15,7 +17,7 @@ public class MainControllerBUpdate {
     @Autowired
     RatesRepository ratesRepository;
 
-    @DeleteMapping(path = "/vat/delete/")
+    @DeleteMapping(path = "/vat/delete")
     public String deleteByAbbreviation(@RequestParam String abbreviation) {
         String result = "Hledaný záznam se zkratkou " + abbreviation + " nebyl nalezen.";
         if (ratesRepository.findById(abbreviation).isPresent()) {
@@ -25,14 +27,15 @@ public class MainControllerBUpdate {
         return result;
     }
 
-    @DeleteMapping(path = "/vat/deletebycountry/")
+    @DeleteMapping(path = "/vat/deletebycountry")
     public String deleteByCountry(@RequestParam String country) {
         String result = "Záznam státu " + country + " nebyl nalezen.";
-        for (Rate item : ratesRepository.findAll()) {
-            if (item.getCountry().equals(country)) {
+        List<Rate> deleteRates = ratesRepository.findRateDistinctByCountry(country);
+        if (!deleteRates.isEmpty()) {
+            for (Rate item:deleteRates) {
                 ratesRepository.delete(item);
-                result = "Záznam státu " + country + " byl smazán.";
             }
+            result = "Záznam státu " + country + " byl smazán.";
         }
         return result;
     }

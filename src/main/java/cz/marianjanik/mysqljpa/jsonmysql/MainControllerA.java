@@ -1,7 +1,7 @@
-package cz.marianjanik.mysql_jpa.json_mysql;
+package cz.marianjanik.mysqljpa.jsonmysql;
 
-import cz.marianjanik.mysql_jpa.Rate;
-import cz.marianjanik.mysql_jpa.RatesRepository;
+import cz.marianjanik.mysqljpa.Rate;
+import cz.marianjanik.mysqljpa.RatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

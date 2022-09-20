@@ -1,4 +1,4 @@
-package cz.marianjanik.mysql_jpa.json_mysql;
+package cz.marianjanik.mysqljpa.jsonmysql;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

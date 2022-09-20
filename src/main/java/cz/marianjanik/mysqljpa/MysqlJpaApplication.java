@@ -1,4 +1,4 @@
-package cz.marianjanik.mysql_jpa;
+package cz.marianjanik.mysqljpa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

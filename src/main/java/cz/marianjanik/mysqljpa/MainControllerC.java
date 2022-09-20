@@ -1,8 +1,8 @@
-package cz.marianjanik.mysql_jpa;
+package cz.marianjanik.mysqljpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 import static java.lang.System.lineSeparator;
@@ -23,18 +23,15 @@ public class MainControllerC {
         return "Počet všech zemí v databázi je " + String.valueOf(ratesRepository.count()) + ".";
     }
 
-    @GetMapping(path= "/vat/min/{min}")
-    public String getCountBiggerMin(@PathVariable int min) {
-        int count = 0;
-        for (Rate item:ratesRepository.findAll()) {
-            if (item.getStandardRate()>min) count++;
-        }
+    @GetMapping(path= "/vat/min")
+    public String getCountBiggerMin(@RequestParam int min) {
+        List<Rate> rateList = ratesRepository.findRateByStandardRateGreaterThanOrderByStandardRateDesc(min);
         return "Počet všech zemí s DPH větším než " + min
-                + " je " + count + ".";
+                + " je " + rateList.size() + ".";
     }
 
-    @GetMapping(path = "/vat/count/{count}")
-    public List<Rate> getMaxValue(@PathVariable int count) {
+    @GetMapping(path = "/vat/count2")
+    public List<Rate> getMaxValue(@RequestParam int count) {
         TreeSet<Double> vatSet = new TreeSet<>();
         List<Rate> resultList = new ArrayList<>();
         for (Rate item:ratesRepository.findAll()) {
@@ -44,29 +41,22 @@ public class MainControllerC {
         int counter = 0;
         Double min = null;
         for (Double item:vatSet) {
-            counter++;
             if (counter == count) min = item;
+            counter++;
         }
-        for (Rate item: ratesRepository.findAll()) {
-            if (item.getStandardRate()>=min) resultList.add(item);
-        }
-        Collections.sort(resultList, new StandardRateComparator().reversed());
+        resultList = ratesRepository.findRateByStandardRateGreaterThanOrderByStandardRateDesc(min);
         return resultList;
     }
 
-    @GetMapping(path = "/vat/interval/info/{min}/{max}")
-    public String getIntervalInfo(@PathVariable double min,@PathVariable double max) {
-        int count = 0;
-        List<String> resultSet = new ArrayList<>();
-        for (Rate item:ratesRepository.findAll()) {
-            if ((item.getStandardRate() < max) && (item.getStandardRate() > min)) {
-                resultSet.add(item.getCountry());
-                count++;
-            }
+    @GetMapping(path = "/vat/interval/info")
+    public String getIntervalInfo(@RequestParam double min,@RequestParam double max) {
+        List<Rate> resultRate = ratesRepository.findRateByStandardRateBetweenOrderByCountryAsc(min,max);
+        List<String> resultList = new ArrayList<>();
+        for (Rate item:resultRate) {
+            resultList.add(item.getCountry());
         }
-        Collections.sort(resultSet);
-        String result = "Počet státu v intervalu od " + min + "% do " + max + "% je " + count + ".";
-        result += lineSeparator() + "Státy: " + lineSeparator() + resultSet;
+        String result = "Počet státu v intervalu od " + min + "% do " + max + "% je " + resultRate.size() + ".";
+        result += lineSeparator() + "Státy: " + lineSeparator() + resultList;
         return result;
     }
 
@@ -79,11 +69,11 @@ public class MainControllerC {
         int countOfParkingRate = 0;
         for (Rate item: ratesRepository.findAll()) {
             sumOfStandardRate += item.getStandardRate();
-            if (item.getReducedRate() != 0) {
+            if (item.getReducedRate() > 0) {
                 sumOfReducedRate += item.getReducedRate();
                 countOfReduceRate++;
             }
-            if (item.getParkingRate() != 0) {
+            if (item.getParkingRate() > 0) {
                 sumOfParkingRate += item.getParkingRate();
                 countOfParkingRate++;
             }

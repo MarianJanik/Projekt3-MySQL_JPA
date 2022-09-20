@@ -1,4 +1,4 @@
-package cz.marianjanik.mysql_jpa;
+package cz.marianjanik.mysqljpa;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

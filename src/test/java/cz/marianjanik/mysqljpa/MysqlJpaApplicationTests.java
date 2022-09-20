@@ -1,4 +1,4 @@
-package cz.marianjanik.mysql_jpa;
+package cz.marianjanik.mysqljpa;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
